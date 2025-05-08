@@ -1,5 +1,6 @@
 package com.example.cocktailmobileapp.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,64 +14,70 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.cocktailmobileapp.cocktailList
-import com.example.cocktailmobileapp.CocktailMenu
+import com.example.cocktailmobileapp.Cocktail
+import com.example.cocktailmobileapp.CocktailDetailScreen
 
 @Composable
 fun MainScreen(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit
 ) {
-    {
-        var selectedCocktail by remember { mutableStateOf<String?>(null) }
+    var selectedCocktail by remember { mutableStateOf<Cocktail?>(null) }
 
-        CocktailMenu(
-            selectedCocktail = selectedCocktail,
-            onCocktailSelected = {
-                val it = null
-                selectedCocktail = it
-            },
-            onBack = { selectedCocktail = null }
-        )
-    }
+    if (selectedCocktail != null) {
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Koktajle", style = MaterialTheme.typography.headlineSmall)
-            Switch(
-                checked = isDarkTheme,
-                onCheckedChange = { onToggleTheme() }
-            )
+        // DODANE: obsługa przycisku "Wstecz"
+        BackHandler {
+            selectedCocktail = null
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        CocktailDetailScreen(
+            cocktailName = selectedCocktail!!.name,
+            onBack = { selectedCocktail = null }
+        )
+    } else {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(150.dp),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(cocktailList) { cocktail ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { /* na klik */ }
-                ) {
-                    Image(
-                        painter = painterResource(id = cocktail.imageResId),
-                        contentDescription = cocktail.name,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Koktajle", style = MaterialTheme.typography.headlineSmall)
+                Switch(
+                    checked = isDarkTheme,
+                    onCheckedChange = { onToggleTheme() }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(150.dp),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(cocktailList) { cocktail ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .size(100.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(cocktail.name, style = MaterialTheme.typography.bodyMedium)
+                            .fillMaxWidth()
+                            .clickable { selectedCocktail = cocktail }
+                    ) {
+                        Image(
+                            painter = painterResource(id = cocktail.imageResId),
+                            contentDescription = cocktail.name,
+                            modifier = Modifier.size(100.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(cocktail.name, style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
             }
         }
     }
 }
+

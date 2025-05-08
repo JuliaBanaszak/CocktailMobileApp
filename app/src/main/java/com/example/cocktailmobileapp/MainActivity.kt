@@ -212,14 +212,11 @@ fun CocktailDetailScreen(cocktailName: String, onBack: () -> Unit, modifier: Mod
     var timeLeft by remember { mutableStateOf(60) }
     var isRunning by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isRunning) {
-        snapshotFlow { isRunning }
-            .collect { running ->
-                while (running && timeLeft > 0) {
-                    delay(1000L)
-                    timeLeft--
-                }
-            }
+    LaunchedEffect(isRunning, timeLeft) {
+        if (isRunning && timeLeft > 0) {
+            delay(1000L)
+            timeLeft--
+        }
     }
 
 
@@ -364,6 +361,11 @@ data class CocktailDetails(val ingredients: String, val preparation: String)
 @Composable
 fun DefaultPreview() {
     CocktailMobileAppTheme {
-        CocktailMenu()
+        CocktailMenu(
+            selectedCocktail = TODO(),
+            onCocktailSelected = TODO(),
+            onBack = TODO(),
+            modifier = TODO()
+        )
     }
 }
