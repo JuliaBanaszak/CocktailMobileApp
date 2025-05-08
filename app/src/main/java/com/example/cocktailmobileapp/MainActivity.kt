@@ -24,23 +24,41 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.activity.compose.BackHandler
+import com.example.cocktailmobileapp.ui.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CocktailMobileAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CocktailMenu(modifier = Modifier.padding(innerPadding))
-                }
-            }
+            ThemedApp()
         }
     }
 }
 
 @Composable
-fun CocktailMenu(modifier: Modifier = Modifier) {
+fun ThemedApp() {
+    var isDarkTheme by remember { mutableStateOf(false) }
+
+    CocktailMobileAppTheme(darkTheme = isDarkTheme) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            MainScreen(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = { isDarkTheme = !isDarkTheme }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun CocktailMenu(
+    selectedCocktail: String?,
+    onCocktailSelected: (String) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+)
+{
     val cocktails = listOf(
         "Mojito",
         "Aperol Spritz",
@@ -75,12 +93,12 @@ fun CocktailMenu(modifier: Modifier = Modifier) {
                 .weight(1f)
                 .fillMaxHeight()) {
                 items(cocktails) { cocktail ->
-                    CocktailItem(cocktailName = cocktail, onClick = { selectedCocktail = cocktail })
+                    CocktailItem(cocktailName = cocktail, onClick = { onCocktailSelected(cocktail) })
                 }
             }
             Spacer(modifier = Modifier.width(16.dp))
             if (selectedCocktail != null) {
-                CocktailDetailScreen(selectedCocktail!!, onBack = { selectedCocktail = null }, modifier = Modifier.weight(2f))
+                CocktailDetailScreen(selectedCocktail!!, onBack = { onBack() }, modifier = Modifier.weight(2f))
             }
         }
     } else {
@@ -88,11 +106,11 @@ fun CocktailMenu(modifier: Modifier = Modifier) {
             if (selectedCocktail == null) {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(cocktails) { cocktail ->
-                        CocktailItem(cocktailName = cocktail, onClick = { selectedCocktail = cocktail })
+                        CocktailItem(cocktailName = cocktail, onClick = { onCocktailSelected(cocktail) })
                     }
                 }
             } else {
-                CocktailDetailScreen(selectedCocktail!!, onBack = { selectedCocktail = null })
+                CocktailDetailScreen(selectedCocktail!!, onBack = { onBack() })
             }
         }
     }
@@ -195,11 +213,15 @@ fun CocktailDetailScreen(cocktailName: String, onBack: () -> Unit, modifier: Mod
     var isRunning by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRunning) {
-        while (isRunning && timeLeft > 0) {
-            delay(1000L)
-            timeLeft--
-        }
+        snapshotFlow { isRunning }
+            .collect { running ->
+                while (running && timeLeft > 0) {
+                    delay(1000L)
+                    timeLeft--
+                }
+            }
     }
+
 
     val scrollState = rememberScrollState()
 

@@ -1,0 +1,76 @@
+package com.example.cocktailmobileapp.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.cocktailmobileapp.cocktailList
+import com.example.cocktailmobileapp.CocktailMenu
+
+@Composable
+fun MainScreen(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
+) {
+    {
+        var selectedCocktail by remember { mutableStateOf<String?>(null) }
+
+        CocktailMenu(
+            selectedCocktail = selectedCocktail,
+            onCocktailSelected = {
+                val it = null
+                selectedCocktail = it
+            },
+            onBack = { selectedCocktail = null }
+        )
+    }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Koktajle", style = MaterialTheme.typography.headlineSmall)
+            Switch(
+                checked = isDarkTheme,
+                onCheckedChange = { onToggleTheme() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(150.dp),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(cocktailList) { cocktail ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { /* na klik */ }
+                ) {
+                    Image(
+                        painter = painterResource(id = cocktail.imageResId),
+                        contentDescription = cocktail.name,
+                        modifier = Modifier
+                            .size(100.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(cocktail.name, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        }
+    }
+}
