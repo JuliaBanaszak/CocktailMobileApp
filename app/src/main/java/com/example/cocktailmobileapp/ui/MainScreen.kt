@@ -13,9 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.cocktailmobileapp.cocktailList
-import com.example.cocktailmobileapp.Cocktail
-import com.example.cocktailmobileapp.CocktailDetailScreen
+import com.example.cocktailmobileapp.*
 
 @Composable
 fun MainScreen(
@@ -25,14 +23,10 @@ fun MainScreen(
     var selectedCocktail by remember { mutableStateOf<Cocktail?>(null) }
 
     if (selectedCocktail != null) {
-
-        // DODANE: obsługa przycisku "Wstecz"
-        BackHandler {
-            selectedCocktail = null
-        }
+        BackHandler { selectedCocktail = null }
 
         CocktailDetailScreen(
-            cocktailName = selectedCocktail!!.name,
+            cocktail = selectedCocktail!!,
             onBack = { selectedCocktail = null }
         )
     } else {
@@ -46,10 +40,7 @@ fun MainScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Koktajle", style = MaterialTheme.typography.headlineSmall)
-                Switch(
-                    checked = isDarkTheme,
-                    onCheckedChange = { onToggleTheme() }
-                )
+                Switch(checked = isDarkTheme, onCheckedChange = { onToggleTheme() })
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -81,3 +72,7 @@ fun MainScreen(
     }
 }
 
+@Composable
+fun CocktailDetailScreen(cocktail: Cocktail, onBack: () -> Unit) {
+    TODO("Not yet implemented")
+}
