@@ -37,7 +37,9 @@ fun MainScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp)
             ) {
                 Text("Koktajle", style = MaterialTheme.typography.headlineSmall)
                 Switch(checked = isDarkTheme, onCheckedChange = { onToggleTheme() })
@@ -70,9 +72,4 @@ fun MainScreen(
             }
         }
     }
-}
-
-@Composable
-fun CocktailDetailScreen(cocktail: Cocktail, onBack: () -> Unit) {
-    TODO("Not yet implemented")
 }
