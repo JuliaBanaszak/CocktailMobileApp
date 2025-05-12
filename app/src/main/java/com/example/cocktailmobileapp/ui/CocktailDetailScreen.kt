@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CocktailDetailScreen(cocktail: Cocktail, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val details = cocktailDetails[cocktail.name] ?: return
@@ -38,6 +41,19 @@ fun CocktailDetailScreen(cocktail: Cocktail, onBack: () -> Unit, modifier: Modif
     val scrollState = rememberScrollState()
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(cocktail.name) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Wstecz"
+                        )
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             if (details.ingredients.isNotBlank()) {
                 FloatingActionButton(
@@ -64,35 +80,25 @@ fun CocktailDetailScreen(cocktail: Cocktail, onBack: () -> Unit, modifier: Modif
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier.padding(top = 40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Wstecz"
-                )
-            }
-
             Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = cocktail.imageResId),
-                    contentDescription = cocktail.name,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .padding(end = 16.dp)
-                )
-                Text(
-                    text = cocktail.name,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Start
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = cocktail.imageResId),
+                        contentDescription = cocktail.name,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+                }
+
             }
 
             Spacer(modifier = Modifier.height(20.dp))
