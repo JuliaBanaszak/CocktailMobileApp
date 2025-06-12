@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.cocktailmobileapp.ui.MainScreen
+import com.example.cocktailmobileapp.ui.SplashScreen
 import com.example.cocktailmobileapp.ui.theme.CocktailMobileAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,17 +18,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var isDarkTheme by remember { mutableStateOf(false) } // <-- updated
+            var isDarkTheme by remember { mutableStateOf(false) }
+            var showSplash by remember { mutableStateOf(true) }
 
             CocktailMobileAppTheme(darkTheme = isDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(
-                        isDarkTheme = isDarkTheme,
-                        onToggleTheme = { isDarkTheme = !isDarkTheme }
-                    )
+                    if (showSplash) {
+                        SplashScreen(
+                            onLoadingComplete = { showSplash = false }
+                        )
+                    } else {
+                        MainScreen(
+                            isDarkTheme = isDarkTheme,
+                            onToggleTheme = { isDarkTheme = !isDarkTheme }
+                        )
+                    }
                 }
             }
         }
